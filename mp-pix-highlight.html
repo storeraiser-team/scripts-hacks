@@ -1,0 +1,133 @@
+<style>
+  .step__sections .section__content {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  #content-box-2 div.mp-mt-16.mp-mb-16.mp-hidden-block {
+    white-space: normal !important;
+  }
+  #content-box-2 #btnCopyQrCode {
+    flex: 1 !important;
+  }
+  #content-box-3 {
+    order: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 1em;
+  }
+  #content-box-3 h2 {
+    display: flex;
+    justify-content: space-between;
+  }
+  #content-box-3 #qrCodeShortcut {
+    width: 93% !important;
+    background-color: #fff;
+    border: 1px solid #00000040;
+    border-radius: 5px;
+    padding: 18px 16px;
+  }
+  #content-box-3 #btnCopyQrCodeShortcut {
+    cursor: pointer;
+  }
+
+  .content-box #countdown {
+    width: 80px;
+    font-weight: bold;
+    color: #ff0285;
+    text-align: right;
+  }
+</style>
+<script type="text/javascript">
+  function setCustoms() {
+    const inputQrCode = document.getElementById("qrCode");
+    const btnCopyQrCode = document.getElementById("btnCopyQrCode");
+
+    if (
+      Shopify.Checkout.page == "thank_you" &&
+      Shopify.Checkout.step == "thank_you" &&
+      inputQrCode
+    ) {
+      let seconds = 0;
+      let minutes = 15;
+
+      function formatTwoDigits(number) {
+        return number < 10 ? "0" + number : number;
+      }
+
+      function updateTimer() {
+        document.getElementById("countdown").innerText =
+          formatTwoDigits(minutes) + ":" + formatTwoDigits(seconds);
+      }
+
+      function decrementTimer() {
+        seconds--;
+
+        if (seconds < 0) {
+          seconds = 59;
+          minutes--;
+        }
+
+        if (minutes < 0) {
+          clearInterval(timerInterval);
+
+          document.location.reload();
+        } else {
+          updateTimer();
+        }
+      }
+
+      Shopify.Checkout.OrderStatus.addContentBox(
+        "<h2>Só falta fazer o PIX em até 15 minutos <span id='countdown'>15:00</span></h2>",
+        "<p>Pague com o código Pix Copia e Cola</p>",
+        "<div class='qr-code'><input type='text' id='qrCodeShortcut' class='input'></div>",
+        "<div id='btnCopyQrCodeShortcut' class='mp-flex-button-blue mp-flex-05 mp-mb-6 mp-padding-top-16 mp-padding-bottom-16 mp-mobile-flex-1' onclick='window.copyToClipboard()'>Copiar código</div>",
+        "<p><a href='#content-box-2'>Quer pagar via QR Code? clique aqui<a/></p>"
+      );
+
+      let sectionContent = document.querySelector(
+        ".step__sections .section__content"
+      );
+
+      sectionContent
+        .querySelectorAll(".content-box")
+        .forEach((contentBox, index) => {
+          const row = index + 1;
+
+          contentBox.id = `content-box-${row}`;
+          contentBox.style = `order: ${row}`;
+        });
+
+      const btnCopyQrCodeShortcut = document.getElementById(
+        "btnCopyQrCodeShortcut"
+      );
+      const inputQrCodeShortcut = document.getElementById("qrCodeShortcut");
+      inputQrCodeShortcut.value = inputQrCode.innerText;
+
+      window.copyToClipboard = function () {
+        inputQrCodeShortcut.select();
+        inputQrCodeShortcut.setSelectionRange(0, 99999);
+
+        navigator.clipboard.writeText(inputQrCodeShortcut.value).then(
+          function () {
+            btnCopyQrCodeShortcut.innerText = "Copiado!";
+          },
+          function (err) {
+            console.error("Erro ao tentar copiar: ", err);
+          }
+        );
+      };
+
+      let timerInterval = setInterval(decrementTimer, 1000);
+    }
+  }
+
+  const checkPageLoad = setInterval(function () {
+    const inputQrCode = document.getElementById("qrCode");
+    const btnCopyQrCode = document.getElementById("btnCopyQrCode");
+
+    if (inputQrCode && btnCopyQrCode) {
+      clearInterval(checkPageLoad);
+      setCustoms();
+    }
+  }, 500);
+</script>
