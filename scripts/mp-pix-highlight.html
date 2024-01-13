@@ -4,12 +4,6 @@
     flex-direction: column;
   }
 
-  #content-box-2 div.mp-mt-16.mp-mb-16.mp-hidden-block {
-    white-space: normal !important;
-  }
-  #content-box-2 #btnCopyQrCode {
-    flex: 1 !important;
-  }
   #content-box-3 {
     order: 0 !important;
     margin-top: 0 !important;
@@ -19,14 +13,17 @@
     display: flex;
     justify-content: space-between;
   }
+  #content-box-3 .qr-code {
+    display: grid;
+  }
   #content-box-3 #qrCodeShortcut {
-    width: 93% !important;
     background-color: #fff;
     border: 1px solid #00000040;
     border-radius: 5px;
     padding: 18px 16px;
   }
   #content-box-3 #btnCopyQrCodeShortcut {
+    width: auto;
     cursor: pointer;
   }
 
@@ -38,17 +35,14 @@
   }
 </style>
 <script type="text/javascript">
-  function setCustoms() {
-    const inputQrCode = document.getElementById("qrCode");
-    const btnCopyQrCode = document.getElementById("btnCopyQrCode");
-
+  function setCustoms(inputQrCode, btnCopyQrCode) {
     if (
       Shopify.Checkout.page == "thank_you" &&
       Shopify.Checkout.step == "thank_you" &&
       inputQrCode
     ) {
       let seconds = 0;
-      let minutes = 15;
+      let minutes = 30;
 
       function formatTwoDigits(number) {
         return number < 10 ? "0" + number : number;
@@ -77,10 +71,10 @@
       }
 
       Shopify.Checkout.OrderStatus.addContentBox(
-        "<h2>Só falta fazer o PIX em até 15 minutos <span id='countdown'>15:00</span></h2>",
+        "<h2>Só falta fazer o PIX em até 30 minutos <span id='countdown'>15:00</span></h2>",
         "<p>Pague com o código Pix Copia e Cola</p>",
         "<div class='qr-code'><input type='text' id='qrCodeShortcut' class='input'></div>",
-        "<div id='btnCopyQrCodeShortcut' class='mp-flex-button-blue mp-flex-05 mp-mb-6 mp-padding-top-16 mp-padding-bottom-16 mp-mobile-flex-1' onclick='window.copyToClipboard()'>Copiar código</div>",
+        "<div id='btnCopyQrCodeShortcut' class='mp-button' onclick='window.copyToClipboard()'>Copiar código</div>",
         "<p><a href='#content-box-2'>Quer pagar via QR Code? clique aqui<a/></p>"
       );
 
@@ -122,12 +116,12 @@
   }
 
   const checkPageLoad = setInterval(function () {
-    const inputQrCode = document.getElementById("qrCode");
-    const btnCopyQrCode = document.getElementById("btnCopyQrCode");
+    const inputQrCode = document.querySelector('.mp-input-info');
+    const btnCopyQrCode = document.getElementById("mp-copy-code-button");
 
     if (inputQrCode && btnCopyQrCode) {
       clearInterval(checkPageLoad);
-      setCustoms();
+      setCustoms(inputQrCode, btnCopyQrCode);
     }
   }, 500);
 </script>
