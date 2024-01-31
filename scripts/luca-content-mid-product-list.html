@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const banner = document.querySelector('section.banner-two-columns');
+    if (!banner) return;
+
+    const bannerCloned = banner.cloneNode(true);
+    const productList = document.querySelector('section.product-filter-compact');
+    if (!productList || productList.lenght <= 6) return;
+
+    bannerCloned.style = 'grid-column: 1 / 4';
+    productList.querySelector('.product-grid .product-card:nth-child(6)').insertAdjacentElement('afterend', bannerCloned);
+    banner.remove();
+  });
+</script>
